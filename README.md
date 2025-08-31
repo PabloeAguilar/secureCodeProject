@@ -1,4 +1,4 @@
-# SecureCodeProject
+git remote add origin https://github.com/usuario/nombre-repo.git# SecureCodeProject
 
 This project is a web application consisting of a frontend (Blazor) and a backend (ASP.NET Core Web API) with a SQLite database. It includes authentication, user roles, and automated tests.
 

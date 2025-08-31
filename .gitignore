@@ -1,0 +1,44 @@
+# .gitignore for .NET projects
+
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+
+# Others
+*.cache
+*.pdb
+*.mdb
+*.pidb
+*.svclog
+*.scc
+*.orig
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# HTTP request files
+*.http
