@@ -1,0 +1,19 @@
+#
+POST http://localhost:5016/user/submit
+
+######
+GET http://localhost:5016/user/all
+
+
+######
+GET http://localhost:5016/user/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjUiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzU2NjAzMjAwLCJpc3MiOiJzZWN1cmVDb2RlQXBpIiwiYXVkIjoic2VjdXJlQ29kZUFwaVVzZXJzIn0.dyQFkCOqJ6VOxB8JGgmg-BeVCDyQYjsCvLWqqApmi54
+
+######
+POST http://localhost:5016/user/login
+content-type: application/json
+
+{
+    "Username": "admin7" ,
+    "Password": "12345678"
+}

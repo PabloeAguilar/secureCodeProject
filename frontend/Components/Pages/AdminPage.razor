@@ -1,0 +1,129 @@
+@page "/adminPage"
+@inject NavigationManager Navigation;
+@inject AuthStateService AuthStateService;
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject HttpClient Http
+
+<div class="admin-welcome">
+    <h1>Bienvenido, Administrador</h1>
+    <p>Esta es la página de administración. Aquí puedes ver todos los usuarios registrados.</p>
+</div>
+
+<div class="user-table-container">
+    @if (isLoading)
+    {
+        <p>Cargando usuarios...</p>
+    }
+    else if (users is not null && users.Count > 0)
+    {
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@string.Join(", ", user.Roles?.Select(r => r.Name) ?? new List<string>())</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No hay usuarios registrados.</p>
+    }
+</div>
+
+@code {
+    private List<UserDto> users = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthStateService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+        isLoading = true;
+        try
+        {
+            var token = await LocalStorage.GetItemAsync<string>("jwt_token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "User/all");
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await Http.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<List<UserDto>>();
+                    if (result is not null)
+                        users = result;
+                }
+            }
+        }
+        catch { }
+        isLoading = false;
+    }
+
+    public class UserDto
+    {
+        public int UserID { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public List<RoleDto>? Roles { get; set; }
+    }
+    public class RoleDto
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    .admin-welcome {
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
+    .user-table-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .user-table {
+        border-collapse: collapse;
+        width: 90%;
+        max-width: 800px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .user-table th,
+    .user-table td {
+        border: 1px solid #e0e0e0;
+        padding: 10px 16px;
+        text-align: left;
+    }
+
+    .user-table th {
+        background: #0078d7;
+        color: #fff;
+    }
+
+    .user-table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+</style>

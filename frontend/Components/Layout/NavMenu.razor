@@ -1,0 +1,98 @@
+﻿@rendermode InteractiveServer
+
+@inject frontend.Services.AuthStateService AuthStateService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+
+@implements IDisposable
+@code {
+    private bool isAdmin = false;
+    private bool rolesChecked = false;
+
+    protected override void OnInitialized()
+    {
+        AuthStateService.OnChange += AuthStateChanged;
+    }
+
+    private void AuthStateChanged()
+    {
+        rolesChecked = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthStateService.OnChange -= AuthStateChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (AuthStateService.IsAuthenticated && !rolesChecked)
+        {
+            var roles = await LocalStorage.GetItemAsync<List<String>>("user_roles");
+            bool wasAdmin = isAdmin;
+            isAdmin = roles?.Contains("admin") ?? false;
+            rolesChecked = true;
+            if (wasAdmin != isAdmin)
+            {
+                StateHasChanged();
+            }
+        }
+        else if (!AuthStateService.IsAuthenticated && rolesChecked)
+        {
+            isAdmin = false;
+            rolesChecked = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Logout()
+    {
+        try
+        {
+            AuthStateService.Logout();
+
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+}
+
+@if (AuthStateService.IsAuthenticated)
+{
+    <div class="top-row ps-3 navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="">frontend</a>
+            <button type="button" class="btn btn-link text-light" @onclick="Logout">
+                Cerrar sesión (@AuthStateService.Username)
+            </button>
+        </div>
+    </div>
+
+    <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+    <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+        <nav class="nav flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/userPage">
+                    <span class="bi bi-person" aria-hidden="true"></span> Usuario
+                </NavLink>
+            </div>
+            @if (isAdmin)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/adminPage">
+                        <span class="bi bi-shield-lock" aria-hidden="true"></span> Admin
+                    </NavLink>
+                </div>
+            }
+        </nav>
+    </div>
+}

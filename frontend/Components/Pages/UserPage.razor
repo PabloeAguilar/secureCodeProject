@@ -1,0 +1,43 @@
+@page "/userPage"
+@inject NavigationManager Navigation;
+@inject AuthStateService AuthStateService;
+
+<div class="welcome-container">
+	<h1>¡Bienvenido!</h1>
+	<p>Gracias por iniciar sesión. Esperamos que disfrutes tu experiencia en nuestra plataforma.</p>
+	<img src="/favicon.png" alt="Bienvenida" style="width:120px;margin-top:20px;" />
+</div>
+
+@code {
+	protected override void OnInitialized()
+	{
+		if (!AuthStateService.IsAuthenticated)
+		{
+			Navigation.NavigateTo("/login", true);
+		}
+	}
+}
+
+<style>
+	.welcome-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 60vh;
+		background: #f8f9fa;
+		border-radius: 12px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+		padding: 40px 20px;
+		margin: 40px auto;
+		max-width: 400px;
+	}
+	.welcome-container h1 {
+		color: #0078d7;
+		margin-bottom: 12px;
+	}
+	.welcome-container p {
+		color: #333;
+		font-size: 1.1rem;
+	}
+</style>

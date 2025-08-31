@@ -1,0 +1,23 @@
+
+@page "/"
+@inject frontend.Services.AuthStateService AuthStateService
+@inject NavigationManager Navigation
+
+@code {
+	protected override void OnInitialized()
+	{
+		if (!AuthStateService.IsAuthenticated)
+		{
+			Navigation.NavigateTo("/login", true);
+		}
+	}
+}
+
+@if (AuthStateService.IsAuthenticated)
+{
+	<div class="alert alert-success mt-4">
+		<h2>Bienvenido, @AuthStateService.Username!</h2>
+		<p>Has iniciado sesión correctamente.</p>
+	</div>
+}
+
